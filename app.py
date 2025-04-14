@@ -14,21 +14,35 @@ MAX_FILE_SIZE_MB = st.secrets.get("MAX_FILE_SIZE_MB", 50)
 SUPPORTED_LANGUAGES = st.secrets.get("SUPPORTED_LANGUAGES", 
     ["english", "spanish", "french", "german", "portuguese", "italian"])
 
-# Validate API key
-if not OPENROUTER_API_KEY:
-    st.error("OpenRouter API Key is missing. Please configure in Streamlit secrets.")
-    st.stop()
-
-# Ensure download directory exists
-os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-
-# Set page configuration at the very beginning
+# Page configuration before any other Streamlit commands
 st.set_page_config(
     page_title="ContentCraft AI",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Check for API key early
+if not OPENROUTER_API_KEY:
+    st.error("""
+    ## 🔑 API Key Required
+    
+    To use ContentCraft AI, you need to:
+    
+    1. Obtain an OpenRouter API Key from [OpenRouter](https://openrouter.ai/)
+    2. Configure the key in your Streamlit app's secrets
+    
+    #### How to Set Up:
+    - Go to Streamlit Cloud
+    - Navigate to your app's settings
+    - Add a secret named `OPENROUTER_API_KEY` with your API key
+    
+    [Learn more about Streamlit secrets](https://docs.streamlit.io/deploy/streamlit-cloud/deploy-your-app/connect-to-external-resources)
+    """)
+    st.stop()
+
+# Ensure download directory exists
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 def save_uploaded_file(uploaded_file):
     """Save uploaded file to downloads directory"""
