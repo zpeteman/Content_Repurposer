@@ -6,6 +6,14 @@ from audio_download import download_youtube_audio
 from transcribe import transcribe_audio
 from generate_content import generate_platform_content, LANGUAGE_SYSTEM_PROMPTS
 
+# Set page configuration at the very beginning
+st.set_page_config(
+    page_title="ContentCraft AI",
+    page_icon="🚀",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 def save_uploaded_file(uploaded_file):
     """Save uploaded file to downloads directory"""
     try:
@@ -65,7 +73,7 @@ def main():
     """, unsafe_allow_html=True)
 
     # App title and description
-    st.title("🚀 AI Content Repurposer")
+    st.title("🚀 ContentCraft AI")
     st.markdown("Transform your content across multiple social media platforms")
 
     # Sidebar for platform selection and options
