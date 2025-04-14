@@ -6,6 +6,22 @@ from audio_download import download_youtube_audio
 from transcribe import transcribe_audio
 from generate_content import generate_platform_content, LANGUAGE_SYSTEM_PROMPTS
 
+# Retrieve secrets with fallback values
+OPENROUTER_API_KEY = st.secrets.get("OPENROUTER_API_KEY")
+WHISPER_MODEL = st.secrets.get("WHISPER_MODEL", "base")
+DOWNLOAD_DIR = st.secrets.get("DOWNLOAD_DIR", "downloads/")
+MAX_FILE_SIZE_MB = st.secrets.get("MAX_FILE_SIZE_MB", 50)
+SUPPORTED_LANGUAGES = st.secrets.get("SUPPORTED_LANGUAGES", 
+    ["english", "spanish", "french", "german", "portuguese", "italian"])
+
+# Validate API key
+if not OPENROUTER_API_KEY:
+    st.error("OpenRouter API Key is missing. Please configure in Streamlit secrets.")
+    st.stop()
+
+# Ensure download directory exists
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+
 # Set page configuration at the very beginning
 st.set_page_config(
     page_title="ContentCraft AI",
@@ -17,11 +33,8 @@ st.set_page_config(
 def save_uploaded_file(uploaded_file):
     """Save uploaded file to downloads directory"""
     try:
-        # Create downloads directory if it doesn't exist
-        os.makedirs('downloads', exist_ok=True)
-        
         # Generate unique filename
-        filename = os.path.join('downloads', uploaded_file.name)
+        filename = os.path.join(DOWNLOAD_DIR, uploaded_file.name)
         
         # Save file
         with open(filename, 'wb') as f:

@@ -97,4 +97,4 @@ roadmap/
 
 # Sensitive Information
 .env.local
-secrets.json
+secrets.json.streamlit/secrets.toml
