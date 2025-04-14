@@ -24,6 +24,20 @@ def save_uploaded_file(uploaded_file):
         st.error(f"Error saving file: {e}")
         return None
 
+def cleanup_audio_file(audio_path):
+    """
+    Safely delete the audio file after processing
+    
+    Args:
+        audio_path (str): Path to the audio file to be deleted
+    """
+    try:
+        if os.path.exists(audio_path):
+            os.remove(audio_path)
+            st.toast(f"Temporary audio file {os.path.basename(audio_path)} deleted successfully", icon="🗑️")
+    except Exception as e:
+        st.warning(f"Could not delete audio file: {e}")
+
 def main():
     # Custom CSS for better UI
     st.markdown("""
@@ -118,6 +132,7 @@ def main():
             st.warning("Please provide a valid input")
             return
 
+        audio_path = None
         try:
             # Progress tracking
             progress_bar = st.progress(0)
@@ -173,6 +188,11 @@ def main():
             st.error(f"An error occurred: {e}")
             progress_bar.progress(0)
             status_text.text("Error: Process Failed")
+        
+        finally:
+            # Always attempt to clean up audio file
+            if audio_path:
+                cleanup_audio_file(audio_path)
 
 if __name__ == "__main__":
     main()
