@@ -4,6 +4,9 @@ git+https://github.com/openai/whisper.git
 transformers==4.36.2
 openai==1.12.0
 python-dotenv==1.0.0
-torch==2.1.2
-requests==2.31.0
-ffmpeg-python==0.4.1
+torch==2.2.2
+torchaudio
+pandas
+ffmpeg-python
+requests
+numpy
