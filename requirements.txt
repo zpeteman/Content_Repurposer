@@ -1,6 +1,6 @@
 streamlit==1.28.2
-yt-dlp==2023.11.16
-git+https://github.com/openai/whisper.git
+yt-dlp==2024.3.9
+pytube==15.0.0
 transformers==4.36.2
 openai==1.12.0
 python-dotenv==1.0.0
@@ -10,4 +10,3 @@ pandas
 ffmpeg-python
 requests
 numpy
-logging

@@ -9,6 +9,7 @@ load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
 
 # Language-specific system prompts
 LANGUAGE_SYSTEM_PROMPTS = {
@@ -82,21 +83,35 @@ def generate_platform_content(
     if language.lower() not in LANGUAGE_SYSTEM_PROMPTS:
         raise ValueError(f"Unsupported language: {language}. Supported languages: {list(LANGUAGE_SYSTEM_PROMPTS.keys())}")
     
-    # Get OpenRouter API key
-    api_key = os.getenv('OPENROUTER_API_KEY')
+    # Retrieve API key from multiple sources
+    api_key = (
+        os.getenv("OPENROUTER_API_KEY") or 
+        os.getenv("OPENAI_API_KEY")  # Fallback to OpenAI key
+    )
+    
+    # Debug logging for API key
+    logger.info(f"API Key present: {bool(api_key)}")
+    if api_key:
+        logger.info(f"API Key starts with: {api_key[:5]}...")
     if not api_key:
-        logging.warning("No OpenRouter API key found. Using fallback content generation.")
+        logger.warning("No OpenRouter API key found. Using fallback content generation.")
         return {platform: ["Content generation unavailable"] for platform in platforms}
     
     # OpenRouter API endpoint
     url = "https://openrouter.ai/api/v1/chat/completions"
     
-    # Headers for API request
+    # Headers for OpenRouter API
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://github.com/yourusername/content-repurposer"
+        "HTTP-Referer": "https://github.com/zpeteman/Content_Repurposer",
+        "X-Title": "ContentCraft AI"
     }
+    
+    # Validate API key before making request
+    if not api_key or len(api_key.strip()) < 10:
+        logger.error("Invalid or missing API key")
+        return {platform: ["Content generation unavailable - Invalid API key"] for platform in platforms}
     
     # Generate content for each platform
     platform_content = {}
@@ -121,17 +136,22 @@ def generate_platform_content(
                 
                 # Send request to OpenRouter
                 response = requests.post(url, headers=headers, json=payload, timeout=30)
-                response.raise_for_status()
                 
-                # Extract generated content
-                generated_content = response.json()['choices'][0]['message']['content'].strip()
-                platform_posts.append(generated_content)
-                
-                logging.info(f"Successfully generated content for {platform}")
+                # Check response
+                if response.status_code == 200:
+                    # Extract generated content
+                    generated_content = response.json()['choices'][0]['message']['content'].strip()
+                    platform_posts.append(generated_content)
+                    logger.info(f"Successfully generated content for {platform}")
+                else:
+                    # Log detailed error information
+                    logger.error(f"Content generation failed for {platform}: {response.status_code}")
+                    logger.error(f"Response text: {response.text}")
+                    platform_posts.append(f"Content generation failed: {response.status_code}")
             
             except Exception as e:
-                logging.error(f"Error generating content for {platform}: {e}")
-                platform_posts.append(f"Content generation failed: {str(e)}")
+                logger.error(f"Exception in content generation for {platform}: {e}")
+                platform_posts.append(f"Exception generating content: {e}")
         
         platform_content[platform] = platform_posts
     

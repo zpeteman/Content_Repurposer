@@ -2,7 +2,7 @@ import os
 import time
 import streamlit as st
 import pandas as pd
-from audio_download import download_youtube_audio
+from audio_download import download_audio_file
 from transcribe import transcribe_audio
 from generate_content import generate_platform_content, LANGUAGE_SYSTEM_PROMPTS
 
@@ -179,7 +179,7 @@ def main():
             time.sleep(0.5)
 
             if input_source == "Video/Audio URL":
-                audio_path = download_youtube_audio(input_source_value)
+                audio_path = download_audio_file(input_source_value)
             else:
                 audio_path = save_uploaded_file(input_source_value)
 
