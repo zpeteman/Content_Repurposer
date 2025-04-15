@@ -44,7 +44,7 @@ def download_audio_file(url, output_dir='downloads'):
     # Ensure downloads directory exists
     os.makedirs(output_dir, exist_ok=True)
     
-    # yt-dlp options for audio download
+    # Advanced yt-dlp options for robust downloading
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
@@ -53,13 +53,28 @@ def download_audio_file(url, output_dir='downloads'):
             'preferredquality': '192',
         }],
         'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
+        
+        # Bypass age restrictions and other limitations
+        'age_limit': 99,
         'no_warnings': True,
         'ignoreerrors': False,
         'nooverwrites': True,
         'no_color': True,
         'verbose': False,
-        'writesubtitles': False,
-        'writeautomaticsub': False,
+        
+        # Advanced options to bypass restrictions
+        'cookiefile': None,  # You can add a cookie file path if needed
+        'geo_bypass': True,
+        'geo_bypass_country': None,
+        
+        # User agent spoofing
+        'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        
+        # Additional headers
+        'http_headers': {
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Referer': 'https://www.youtube.com/',
+        }
     }
     
     try:
